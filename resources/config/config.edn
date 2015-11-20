@@ -1,0 +1,8 @@
+{:port 8081
+  :debug true
+  :base-url "localhost"
+  :redis {:host "127.0.0.1"
+          :port 6379
+          :db 0}
+  :nomad/environments {
+    "prod" {:debug false}}}
