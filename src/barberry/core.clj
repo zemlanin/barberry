@@ -6,12 +6,13 @@
             [ring.middleware.cookies]
             [ring.middleware.session]
             [ring.middleware.anti-forgery]
-            [barberry.config :refer [config]]
-            [camel-snake-kebab.core :refer [->camelCaseString]]
             [compojure.core :refer :all]
             [compojure.route]
+            [org.httpkit.server :refer [run-server]]
             [clojure.data.json :as json]
-            [org.httpkit.server :refer [run-server]]))
+            [camel-snake-kebab.core :refer [->camelCaseString]]
+            [barberry.config :refer [config]]
+            [barberry.slack :as slack]))
 
 (defn wrap-json-response [resp]
   (-> resp
@@ -32,7 +33,8 @@
 
 (defroutes api-routes
   (context "/api" []
-    (POST "/slack" [] (wrap-json-response "Hello Slack"))))
+    (GET "/run" [] slack/run-bot)
+    (GET "/slack" [] slack/bot-status)))
 
 (defroutes all-routes
   (if (config :debug) (compojure.route/resources "/static/") {})
@@ -51,4 +53,5 @@
 
 (defn -main [& args]
   (let [handler (if (config :debug) my-app-reload my-app)]
+    (slack/run-bot)
     (run-server handler {:port (config :port)})))

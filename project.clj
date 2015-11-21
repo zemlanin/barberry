@@ -16,7 +16,8 @@
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [hiccup "1.0.5"]
                  [prismatic/schema "1.0.1"]
-                 [com.taoensso/carmine "2.12.0"]]
+                 [com.taoensso/carmine "2.12.0"]
+                 [aleph "0.4.1-beta2"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]]
