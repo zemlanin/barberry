@@ -41,7 +41,6 @@
              :css-dirs ["resources/public/css"]
              :ring-handler barberry.core/my-app-reload}
 
-
   :main ^:skip-aot barberry.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all}})

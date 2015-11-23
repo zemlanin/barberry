@@ -33,7 +33,6 @@
 
 (defroutes api-routes
   (context "/api" []
-    (GET "/run" [] slack/run-bot)
     (GET "/slack" [] slack/bot-status)))
 
 (defroutes all-routes
@@ -51,7 +50,12 @@
   (-> my-app
       (reload/wrap-reload {:dirs ["src"]})))
 
+(def run-bot-reload
+  (-> slack/run-bot
+      (reload/wrap-reload {:dirs ["src"]})))
+
 (defn -main [& args]
-  (let [handler (if (config :debug) my-app-reload my-app)]
-    (slack/run-bot)
+  (let [handler (if (config :debug) my-app-reload my-app)
+        run-bot (if (config :debug) run-bot-reload slack/run-bot)]
+    (run-bot 1) ; for reload/wrap-reload
     (run-server handler {:port (config :port)})))
