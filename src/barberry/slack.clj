@@ -19,15 +19,15 @@
 (defn is-dm-channel? [channel]
   (.startsWith (name channel) "D"))
 
-(defn is-own-msg? [conn]
-  #(= % (-> conn :self :id)))
+(defn is-own-msg? [user]
+  (= user (-> @rtm-connection :self :id)))
 
 (defn send-msg [conn msg]
   (go (s/put! (:stream conn) (json/write-str (merge msg {:id (get-id)})))))
 
 (defn route-msg [conn msg]
   (match msg
-    {:user (u :guard (is-own-msg? conn))} (println "self" msg)
+    {:user (u :guard is-own-msg?)} (println "self" msg)
     {:type "message"
       :channel (c :guard is-dm-channel?)
       :text text} (send-msg conn {:type :message
@@ -44,9 +44,10 @@
         (s/close! (:stream @rtm-connection)))
       (reset! rtm-connection conn)
       (go-loop []
-        (when-not (s/closed? (:stream conn)) (send-msg conn {:type :ping}))
-        (<!! (timeout 15000))
-        (recur))
+        (when-not (s/closed? (:stream conn))
+          (send-msg conn {:type :ping})
+          (<!! (timeout 15000))
+          (recur)))
       (go-loop []
         (when-let [msg @(s/take! (:stream conn))]
           (route-msg conn (json/read-str msg :key-fn keyword))
