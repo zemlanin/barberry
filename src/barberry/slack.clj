@@ -6,7 +6,7 @@
             [clojure.data.json :as json]
             [clojure.core.async :refer [go go-loop <!! timeout]]
             [clojure.core.match :refer [match]]
-            [barberry.msg-handlers]
+            [barberry.msg-handlers :refer [strip-mention]]
             [barberry.rtm :refer [connection send-msg]]
             [barberry.config :refer [config]]))
 
@@ -19,9 +19,15 @@
   (if (is-own-msg? msg)
     (print "self ")
     (do
-      (doseq [{p :pattern h :handler} (->> 'barberry.msg-handlers ns-publics vals (map var-get))
-              :when (and p h (p msg))]
-        (h conn msg))))
+      (doseq [{c :cond p :pattern handler :handler} (->> 'barberry.msg-handlers ns-publics vals (map var-get))
+              :when (and
+                      c p handler
+                      (c msg)
+                      (->> msg :text strip-mention (re-find p)))]
+        (handler
+          conn (merge
+                  msg
+                  {:matches (->> msg :text strip-mention (re-find p))})))))
   (println msg))
 
 (defn bot-handshake [{ok :ok url :url :as resp}]

@@ -37,7 +37,7 @@
                                     :optimizations :advanced
                                     :pretty-print false}}]}
 
-  :figwheel {:server-ip   "0.0.0.0"
+  :figwheel {:server-ip "0.0.0.0"
              :css-dirs ["resources/public/css"]
              :ring-handler barberry.core/my-app-reload}
 
