@@ -6,43 +6,32 @@
             [clojure.data.json :as json]
             [clojure.core.async :refer [go go-loop <!! timeout]]
             [clojure.core.match :refer [match]]
+            [barberry.msg-handlers]
+            [barberry.rtm :refer [connection send-msg]]
             [barberry.config :refer [config]]))
 
 (def RTM-START-URL "https://slack.com/api/rtm.start")
 
-(defonce rtm-connection (atom nil))
-(defonce rtm-msg-id (atom 0))
-
-(defn get-id []
-  (swap! rtm-msg-id inc))
-
-(defn is-dm-channel? [channel]
-  (.startsWith (name channel) "D"))
-
-(defn is-own-msg? [user]
-  (= user (-> @rtm-connection :self :id)))
-
-(defn send-msg [conn msg]
-  (go (s/put! (:stream conn) (json/write-str (merge msg {:id (get-id)})))))
+(defn is-own-msg? [{user :user}]
+  (= user (-> @connection :self :id)))
 
 (defn route-msg [conn msg]
-  (match msg
-    {:user (u :guard is-own-msg?)} (println "self" msg)
-    {:type "message"
-      :channel (c :guard is-dm-channel?)
-      :text text} (send-msg conn {:type :message
-                                  :text text
-                                  :channel c})
-    :else (println msg)))
+  (if (is-own-msg? msg)
+    (print "self ")
+    (do
+      (doseq [{p :pattern h :handler} (->> 'barberry.msg-handlers ns-publics vals (map var-get))
+              :when (and p h (p msg))]
+        (h conn msg))))
+  (println msg))
 
 (defn bot-handshake [{ok :ok url :url :as resp}]
   (if-not ok
     (:error resp)
     (let [conn (merge resp {:stream @(http/websocket-client url)})]
       (println "rtm connected to" url)
-      (when @rtm-connection
-        (s/close! (:stream @rtm-connection)))
-      (reset! rtm-connection conn)
+      (when @connection
+        (s/close! (:stream @connection)))
+      (reset! connection conn)
       (go-loop []
         (when-not (s/closed? (:stream conn))
           (send-msg conn {:type :ping})
