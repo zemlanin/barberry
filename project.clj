@@ -41,7 +41,8 @@
                                     :pretty-print false}}]}
 
   :figwheel {:server-ip "0.0.0.0"
-             :css-dirs ["resources/public/css"]}
+             :css-dirs ["resources/public/css"]
+             :ring-handler barberry.core/my-app-reload}
 
   :main ^:skip-aot barberry.core
   :target-path "target/%s"

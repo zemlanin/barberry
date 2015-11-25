@@ -13,7 +13,7 @@
     [:ul {} (for [o pending]
               [:li {} (str o)])]))
 
-(ajax/GET "http://localhost:8081/api/orders"
+(ajax/GET "/api/orders"
   {:handler #(swap! app-state assoc :orders %)
     :error-handler #(println %)})
 
