@@ -1,0 +1,38 @@
+body {
+  background-color: #DFFEE3;
+}
+
+a {
+  cursor: pointer;
+}
+
+a:not([href]):not(.fa) {
+  cursor: pointer;
+  border-bottom: 1px dashed;
+}
+
+.fa {
+  font-family: 'FontAwesome';
+}
+
+.fa-toggle-on {
+  color: #00A500;
+}
+
+.fa-remove {
+  color: red;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotating {
+  color: royalblue;
+  animation: rotating 2s linear infinite;
+}

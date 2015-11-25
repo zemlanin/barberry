@@ -17,7 +17,10 @@
                  [hiccup "1.0.5"]
                  [prismatic/schema "1.0.1"]
                  [com.taoensso/carmine "2.12.0"]
-                 [aleph "0.4.1-beta2"]]
+                 [aleph "0.4.1-beta2"]
+                 [rum "0.5.0"]
+                 [sablono "0.4.0"]
+                 [cljs-ajax "0.3.11"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]]
@@ -25,21 +28,20 @@
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src-cljs"]
                         :figwheel true
-                        :compiler { :main "barberry.core"
+                        :compiler { :main barberry.core
                                     :output-to "resources/public/js/compiled/barberry.js"
-                                    :output-dir "resources/public/js/compiled"
-                                    :asset-path "/static/js/compiled"}}
+                                    :output-dir "resources/public/js/compiled/out"
+                                    :asset-path "js/compiled/out"}}
                        {:id "min"
                         :source-paths ["src-cljs"]
-                        :compiler { :main "barberry.core"
+                        :compiler { :main barberry.core
                                     :output-to "resources/public/js/compiled/barberry.js"
                                     :asset-path "/static/js/compiled"
                                     :optimizations :advanced
                                     :pretty-print false}}]}
 
   :figwheel {:server-ip "0.0.0.0"
-             :css-dirs ["resources/public/css"]
-             :ring-handler barberry.core/my-app-reload}
+             :css-dirs ["resources/public/css"]}
 
   :main ^:skip-aot barberry.core
   :target-path "target/%s"

@@ -12,7 +12,8 @@
             [clojure.data.json :as json]
             [camel-snake-kebab.core :refer [->camelCaseString]]
             [barberry.config :refer [config]]
-            [barberry.slack :as slack]))
+            [barberry.slack :as slack]
+            [barberry.orders :as orders]))
 
 (defn wrap-json-response [resp]
   (-> resp
@@ -24,8 +25,7 @@
 (def web-routes
   (wrap-routes
     (routes
-      (GET "/" [] (wrap-json-response "Hello World"))
-      (GET "/orders" [] (wrap-json-response "Hello Orders")))
+      (GET "/" [] (wrap-json-response "Hello World")))
 
     #(-> %
           ring.middleware.anti-forgery/wrap-anti-forgery
@@ -33,7 +33,7 @@
 
 (defroutes api-routes
   (context "/api" []
-    (GET "/slack" [] slack/bot-status)))
+    (GET "/orders" [] orders/handler)))
 
 (defroutes all-routes
   (if (config :debug) (compojure.route/resources "/static/") {})
