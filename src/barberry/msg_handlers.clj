@@ -40,5 +40,5 @@
                     (and
                       (-> msg :type (= "message"))
                       (is-mention? msg)))
-            :pattern #"хочу (.*)"
+            :pattern #"^хочу (.*)"
             :handler wanna-h})

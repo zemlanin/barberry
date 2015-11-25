@@ -27,7 +27,8 @@
         (handler
           conn (merge
                   msg
-                  {:matches (->> msg :text strip-mention (re-find p))})))))
+                  {:matches (->> msg :text strip-mention (re-find p))
+                    :text (-> msg :text strip-mention)}))))) 
   (println msg))
 
 (defn bot-handshake [{ok :ok url :url :as resp}]
