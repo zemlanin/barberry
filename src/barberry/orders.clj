@@ -1,4 +1,5 @@
-(ns barberry.orders)
+(ns barberry.orders
+  (:require [barberry.redis :as redis]))
 
 (defn wrap-edn-response
   ([resp] (wrap-edn-response resp 200))
@@ -8,5 +9,8 @@
                             "Access-Control-Allow-Origin" "*"}}))
 
 (defn handler [r]
-  (wrap-edn-response {:pending [{:id 1
-                                  :item "tea"}]}))
+  (let [pending-ids (redis/wcar* (redis/smembers "pending"))
+        pending-orders (if (count pending-ids)
+                        (redis/wcar* (apply redis/hmget "orders" pending-ids))
+                        [])]
+    (wrap-edn-response {:pending pending-orders})))
