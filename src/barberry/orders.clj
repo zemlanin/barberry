@@ -10,7 +10,7 @@
 
 (defn handler [r]
   (let [pending-ids (redis/wcar* (redis/smembers "pending"))
-        pending-orders (if (count pending-ids)
-                        (redis/wcar* (apply redis/hmget "orders" pending-ids))
-                        [])]
+        pending-orders (if (empty? pending-ids)
+                        []
+                        (redis/wcar* (apply redis/hmget "orders" pending-ids)))]
     (wrap-edn-response {:pending pending-orders})))
