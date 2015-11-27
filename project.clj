@@ -20,7 +20,8 @@
                  [aleph "0.4.1-beta2"]
                  [rum "0.5.0"]
                  [sablono "0.4.0"]
-                 [cljs-ajax "0.3.11"]]
+                 [cljs-ajax "0.5.1"]
+                 [fogus/ring-edn "0.3.0"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]]

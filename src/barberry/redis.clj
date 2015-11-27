@@ -18,5 +18,8 @@
 (def hmget car/hmget)
 (def hset car/hset)
 (def hsetnx car/hsetnx)
+(def hdel car/hdel)
 (def sadd car/sadd)
 (def smembers car/smembers)
+(def smove car/smove)
+(def srem car/srem)

@@ -6,6 +6,7 @@
             [ring.middleware.cookies]
             [ring.middleware.session]
             [ring.middleware.anti-forgery]
+            [ring.middleware.edn]
             [compojure.core :refer :all]
             [compojure.route]
             [org.httpkit.server :refer [run-server]]
@@ -33,7 +34,10 @@
 
 (defroutes api-routes
   (context "/api" []
-    (GET "/orders" [] orders/handler)))
+    (GET "/orders" [] orders/handler)
+    (PUT "/take-order" [] orders/take-order)
+    (PUT "/finish-order" [] orders/finish-order)
+    (PUT "/delete-order" [] orders/delete-order)))
 
 (defroutes all-routes
   (if (config :debug) (compojure.route/resources "/static/") {})
@@ -42,6 +46,7 @@
 
 (def my-app
   (-> all-routes
+      ring.middleware.edn/wrap-edn-params
       ring.middleware.keyword-params/wrap-keyword-params
       ring.middleware.params/wrap-params
       ring.middleware.cookies/wrap-cookies))
