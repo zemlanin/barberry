@@ -3,15 +3,21 @@
     (:require [rum.core :as rum]
               [ajax.core :as ajax]
               [cljs.core.async :refer [timeout <!]]
-              [ajax.edn :refer [edn-request-format edn-response-format]]))
+              [ajax.edn :refer [edn-request-format edn-response-format]]
+              [datascript.core :as d]))
 
 (enable-console-print!)
 
 (def app-state (atom {}))
+(def conn (d/create-conn {}))
 
 (defn refresh-orders []
   (ajax/GET "/api/orders"
-    {:handler #(swap! app-state assoc :orders %)
+    {:handler (fn [resp]
+                (d/transact! conn (->> resp :pending (map (fn [x] {:order/id (:id x)
+                                                                   :order/text (:text x)
+                                                                   :order/user (:user x)}))))
+                (swap! app-state assoc :orders resp))
       :format (edn-request-format)
       :response-format (edn-response-format)
       :error-handler println}))
@@ -60,10 +66,11 @@
                   [:span (str o)]
                   [:button {:onClick #(delete-order o)} "delete"]])]]))
 
-(go-loop []
-  (refresh-orders)
-  (<! (timeout 10000))
-  (recur))
+(refresh-orders)
+; (go-loop []
+;   (refresh-orders)
+;   (<! (timeout 10000))
+;   (recur))
 
 (rum/mount
   (application app-state)

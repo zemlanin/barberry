@@ -21,7 +21,8 @@
                  [rum "0.5.0"]
                  [sablono "0.4.0"]
                  [cljs-ajax "0.5.1"]
-                 [fogus/ring-edn "0.3.0"]]
+                 [fogus/ring-edn "0.3.0"]
+                 [datascript "0.13.3"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.0-1"]]
